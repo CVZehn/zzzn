@@ -1,0 +1,7 @@
+".\Objects\main.obj",
+".\Objects\motor.obj",
+".\Objects\timer0.obj",
+".\Objects\oled.obj",
+".\Objects\NRF24L01.obj" 
+TO ".\Objects\智能车桩" 
+PRINT(".\Listings\智能车桩.m51") RAMSIZE(256) 
