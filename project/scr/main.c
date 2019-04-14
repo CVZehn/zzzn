@@ -15,24 +15,25 @@ void main()
 {
     P0M1 = 0;  
     P0M0 = 0;   //设置为准双向口
-    
-    run=Delay150us;//初始化指针函数防止野指针的出现
+    SW1=1;
+    SW2=1;
+    Metal = 1;
+    run=MotorStop;//初始化指针函数防止野指针的出现
     timer0_Init();
     InitADC();
     usart2_init();
     init_NRF24L01();
 	OLED_Init();			//初始化OLED  
 	OLED_Clear(); 
- //   OLED_ShowString(1,1,"34",16);
+    OLED_ShowString(10,0,"ready    ",16);
 	while(1)
 	{
-        MotorSpeedOrDirection(1,0);
-//        sence();
-//        remote_control();
-//        nRF24L01_TX_Mode(TXBUFF);
-//        Delay150us();
-//        nRF24L01_RX_Mode(RXBUFF);
-//        Delay150us();
+        sence();
+        nRF24L01_TX_Mode(TXBUFF);
+        Delay150us();
+        nRF24L01_RX_Mode(RXBUFF);
+        Delay150us();
+        remote_control();
 	}
 }
  

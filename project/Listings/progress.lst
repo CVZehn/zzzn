@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   PROGRESS                                                          04/17/2019 21:09:16 PAGE 1   
+C51 COMPILER V9.53.0.0   PROGRESS                                                          04/19/2019 12:17:39 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE PROGRESS
@@ -11,104 +11,145 @@ line level    source
    1          #include "project_config.h"
    2          
    3          uchar Semaphore=0;
-   4          u8 comlive_time;
-   5          
-   6          //Semaphore;//信号量 ：红外和金属检测标志
-   7                                 //0：无    1：红外感应到人 2：检测到金属物体
-   8          void null()
-   9          {
-  10   1          
-  11   1      }    
-  12          void rr()
-  13          {
-  14   1      //   if(SW1==1)
-  15   1      //   {
-  16   1             step--;
-  17   1             move(step);
-  18   1      //   }
-  19   1      //   else
-  20   1      //   {
-  21   1      //       MotorStop();
-  22   1      //   }
-  23   1      }
-  24          void rl()
-  25          {
-  26   1      //   if(SW2==1)
-  27   1      //   {
-  28   1             step++;
-  29   1             move(step);
-  30   1      //   }
-  31   1      //   else
-  32   1      //   {
-  33   1      //       MotorStop();
-  34   1      //   }
-  35   1      }
-  36          
-  37          void sence()
-  38          {
-  39   1          Semaphore=0;
-  40   1          if(Metal==1&&((GetADCResult(0)<<2)|ADC_LOW2)<100)
-  41   1          {
-  42   2              Semaphore=1;
-  43   2              TXBUFF[1]=2;
-  44   2          }
-  45   1          if(Metal==0&&((GetADCResult(0)<<2)|ADC_LOW2)>100)
-  46   1          {
-  47   2              Semaphore=2;
-  48   2              TXBUFF[1]=2;
-  49   2          }
-  50   1          if(Metal==1&&((GetADCResult(0)<<2)|ADC_LOW2)>100)
-  51   1          {
-  52   2              Semaphore=3;
-  53   2              TXBUFF[1]=3;
-  54   2          }
-C51 COMPILER V9.53.0.0   PROGRESS                                                          04/17/2019 21:09:16 PAGE 2   
+   4          uint comlive_time=0;
+   5          uint rise_time=0;
+   6          
+   7          //Semaphore;//信号量 ：红外和金属检测标志
+   8                                 //0：无    1：红外感应到人 2：检测到金属物体
+   9          void null()
+  10          {
+  11   1          
+  12   1      }    
+  13          void up()
+  14          {
+  15   1         ledr=0;
+  16   1          ledg=1;
+  17   1         if(SW2==1)
+  18   1         {
+  19   2              step--;
+  20   2              move(step);
+  21   2              if(step<=0)
+  22   2              {
+  23   3                  step=7;
+  24   3              }
+  25   2         }
+  26   1         else
+  27   1         {
+  28   2              MotorStop();
+  29   2              run=MotorStop;
+  30   2         }
+  31   1      }
+  32          void down()
+  33          { 
+  34   1          ledg=0;
+  35   1         ledr=1;
+  36   1         if(SW1==1)
+  37   1         {
+  38   2              step++;
+  39   2              move(step);
+  40   2              if(step>=7)
+  41   2              {
+  42   3                  step=0;
+  43   3              }
+  44   2         }
+  45   1         else
+  46   1         {
+  47   2              MotorStop();
+  48   2              rise_time++;
+  49   2             if(rise_time>keep_time)
+  50   2             {
+  51   3                 rise_time=0;
+  52   3                 run=up;//run函数指向up函数
+  53   3             }
+  54   2      
+C51 COMPILER V9.53.0.0   PROGRESS                                                          04/19/2019 12:17:39 PAGE 2   
 
-  55   1              OLED_ShowNum(5,5,((GetADCResult(0)<<2)|ADC_LOW2),4,16);
+  55   2         }
   56   1      }
   57          
-  58          void remote_control()
+  58          void sence()
   59          {
-  60   1          if(RXBUFF[0]!=RXBUFF_L[0])//首先判断收到的指令是否与上一条的相同；当距离上一次RXBUFF_L更新超过5秒时，
-  61   1          {                           //RXBUFF_L在定时器中断中清空置零
-  62   2              comlive_time=com_new;
-  63   2              
-  64   2              if(RXBUFF[0]==open)
-  65   2              {
-  66   3                  //允许通过
-  67   3                  //障碍杆下降
-  68   3                  run=rl;
-  69   3                  comm_pole=pole_down;
-  70   3                  step=7;//
-  71   3                  OLED_ShowString(36,3,"112",16);
-  72   3              }
-  73   2              else if(RXBUFF[0]==102)
-  74   2              {  
-  75   3                  ////禁止通过
-  76   3                  ///
-  77   3                  run=rr;
-  78   3                  comm_pole=pole_up;
-  79   3                  step=0;//
-  80   3                  OLED_ShowString(36,3,"111",16);
-  81   3                  say("英");//tts语音
-  82   3              }
-  83   2                  *RXBUFF_L=*RXBUFF;
-  84   2          }
-  85   1          if(KEY1==0)
-  86   1          {
-  87   2              TXBUFF[0]=command1;
-  88   2          }
-  89   1          else if(KEY2==0)
-  90   1          {
-  91   2              TXBUFF[0]=command2;
-  92   2          }
-  93   1      }
+  60   1          if(Metal==0&&((GetADCResult(0)<<2)|ADC_LOW2)<Pedestrian_distance)//检测到车辆
+  61   1          {
+  62   2              Semaphore=vehicle;
+  63   2              OLED_ShowString(10,0,"Vehicle    ",16);
+  64   2          }
+  65   1          else if(Metal==1&&((GetADCResult(0)<<2)|ADC_LOW2)>Pedestrian_distance)//检测到行人
+  66   1          {
+  67   2              Semaphore=pedestrian;
+  68   2              OLED_ShowString(10,0,"Pedestrian",16);
+  69   2          }
+  70   1          else if(Metal==0&&((GetADCResult(0)<<2)|ADC_LOW2)>Pedestrian_distance)//都检测到
+  71   1          {
+  72   2              Semaphore=all;
+  73   2              OLED_ShowString(10,0,"ALL       ",16);
+  74   2          }
+  75   1          else if(Semaphore==0)
+  76   1          {
+  77   2              OLED_ShowString(10,0,"ready      ",16);
+  78   2          }
+  79   1          if(KEY1==0)
+  80   1          {
+  81   2                  OLED_ShowString(10,0,"           ",16);
+  82   2                  ////障碍杆上升
+  83   2                  run=up;//run函数指向up函数
+  84   2                  comm_pole=pole_up;
+  85   2                  OLED_ShowString(10,3,"No Through ",16);
+  86   2                  say("英");//tts语音
+  87   2          }
+  88   1          else if(KEY2==0)
+  89   1          {
+  90   2                  OLED_ShowString(10,0,"           ",16);
+  91   2                  //障碍杆下降
+  92   2                  run=down;//run函数指向down函数
+  93   2                  comm_pole=pole_down;
+  94   2                  OLED_ShowString(10,3,"Let Through   ",16);
+  95   2                  say("英");//tts语音
+  96   2          }
+  97   1              TXBUFF[1]=Semaphore;
+  98   1              OLED_ShowNum(80,5,((GetADCResult(0)<<2)|ADC_LOW2),4,16);
+  99   1      }
+ 100          
+ 101          void remote_control()
+ 102          {
+ 103   1          if(RXBUFF[1]!=RXBUFF_L[1])//首先判断收到的指令是否与上一条的相同；当距离上一次RXBUFF_L更新超过5秒时，
+ 104   1          {                           //RXBUFF_L在定时器中断中清空置零
+ 105   2              OLED_ShowString(10,0,"           ",16);
+ 106   2              if(RXBUFF[1]==pole_up)
+ 107   2              {
+ 108   3                  ////障碍杆上升
+ 109   3                  run=up;//run函数指向up函数
+ 110   3                  comm_pole=pole_up;
+ 111   3                  OLED_ShowString(10,3,"No Through ",16);
+ 112   3                  say("英");//tts语音
+ 113   3              }
+ 114   2              else if(RXBUFF[1]==pole_down)
+ 115   2              {  
+ 116   3                  //障碍杆下降
+C51 COMPILER V9.53.0.0   PROGRESS                                                          04/19/2019 12:17:39 PAGE 3   
+
+ 117   3                  run=down;//run函数指向up函数
+ 118   3                  comm_pole=pole_down;
+ 119   3                  OLED_ShowString(10,3,"Let Through   ",16);
+ 120   3                  say("英");//tts语音
+ 121   3              }
+ 122   2              else if(RXBUFF[1]==pole_stop)
+ 123   2              {  
+ 124   3                  //障碍杆下降
+ 125   3                  run=MotorStop;//run函数指向up函数
+ 126   3                  comm_pole=pole_stop;
+ 127   3                  OLED_ShowString(10,3,"  STOP       ",16);
+ 128   3                  say("英");//tts语音
+ 129   3              }
+ 130   2              RXBUFF_L[1]=RXBUFF[1];
+ 131   2          }
+ 132   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    311    ----
-   CONSTANT SIZE    =     11    ----
-   XDATA SIZE       =      6    ----
+   CODE SIZE        =    590    ----
+   CONSTANT SIZE    =    102    ----
+   XDATA SIZE       =      9    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

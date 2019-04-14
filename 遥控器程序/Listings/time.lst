@@ -1,0 +1,48 @@
+C51 COMPILER V9.53.0.0   TIME                                                              04/18/2019 16:23:50 PAGE 1   
+
+
+C51 COMPILER V9.53.0.0, COMPILATION OF MODULE TIME
+OBJECT MODULE PLACED IN .\Objects\time.obj
+COMPILER INVOKED BY: D:\keil\C51\BIN\C51.EXE SRC\time.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\INC) DEBUG OBJECTEXTEND PRINT(
+                    -.\Listings\time.lst) OBJECT(.\Objects\time.obj)
+
+line level    source
+
+   1          #include "time.h"
+   2          
+   3          WORD  i;
+   4          //-----------------------------------------------
+   5          
+   6          void tm0_isr() interrupt 1 using 1
+   7          {
+   8   1      }
+   9          
+  10          //-----------------------------------------------
+  11          
+  12          void timer_init()
+  13          {
+  14   1          AUXR |= 0x80;                   //定时器0为1T模式
+  15   1      //  AUXR &= 0x7f;                   //定时器0为12T模式
+  16   1      
+  17   1          TMOD = 0x00;                    //设置定时器为模式0(16位自动重装载)
+  18   1          TL0 = T1MS;                     //初始化计时值
+  19   1          TH0 = T1MS >> 8;
+  20   1          TR0 = 1;                        //定时器0开始计时
+  21   1          ET0 = 1;                        //使能定时器0中断
+  22   1          EA = 1;
+  23   1      }
+  24          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     19    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

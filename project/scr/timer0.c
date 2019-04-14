@@ -12,8 +12,8 @@ void timer0_Init()
 	TMOD = 0x11;
 	ET0 = 1;
  
-	TH0=(65536-1000)/256;
-	TL0=(65536-1000)%256;
+	TH0=(65536-1100)/256;
+	TL0=(65536-1100)%256;
  
 	TR0=1;
 }
@@ -25,15 +25,19 @@ void timer0_Init()
 //******************************
 void time0int(void) interrupt 1
 {
-	TH0=(65536-1000)/256;
-	TL0=(65536-1000)%256;
-//    run();
+	TH0=(65536-1100)/256;
+	TL0=(65536-1100)%256;
+    run();
 	count++;
-//    comlive_time++;
-//    if(comlive_time>com_dead)
-//    {
-//        comlive_time=com_new;
-//    }
+    if(Semaphore!=0)
+    {
+        comlive_time++;
+    }
+    if(comlive_time>com_dead)
+    {
+        comlive_time=com_new;
+        Semaphore=0;
+    }
 }
  
  

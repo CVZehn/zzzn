@@ -1,0 +1,1 @@
+"SRC\time.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(.\INC) DEBUG OBJECTEXTEND PRINT(.\Listings\time.lst) OBJECT(.\Objects\time.obj)

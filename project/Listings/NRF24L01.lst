@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 C51 COMPILER V9.53.0.0   NRF24L01                                                          04/16/2019 20:01:40 PAGE 1   
+=======
+C51 COMPILER V9.53.0.0   NRF24L01                                                          04/18/2019 15:56:43 PAGE 1   
+>>>>>>> 4c546ed... 1
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE NRF24L01
@@ -62,7 +66,11 @@ line level    source
   50          uchar   bdata sta;   //状态标志
   51          sbit    RX_DR   =sta^6;
   52          sbit    TX_DS   =sta^5;
+<<<<<<< HEAD
 C51 COMPILER V9.53.0.0   NRF24L01                                                          04/16/2019 20:01:40 PAGE 2   
+=======
+C51 COMPILER V9.53.0.0   NRF24L01                                                          04/18/2019 15:56:43 PAGE 2   
+>>>>>>> 4c546ed... 1
 
   53          sbit    MAX_RT  =sta^4;
   54          //*****************************************长延时*****************************************
@@ -126,7 +134,11 @@ line level    source
  112   1              pBuf[i] = SPI_RW(0);    // 
  113   1              CSN = 1;                           
  114   1      }
+<<<<<<< HEAD
 C51 COMPILER V9.53.0.0   NRF24L01                                                          04/16/2019 20:01:40 PAGE 3   
+=======
+C51 COMPILER V9.53.0.0   NRF24L01                                                          04/18/2019 15:56:43 PAGE 3   
+>>>>>>> 4c546ed... 1
 
  115          /*********************************************************************************************************
  116          /*功能: 用于写数据：为寄存器地址，pBuf：为待写入数据地址，uchars：写入数据的个数
@@ -190,7 +202,11 @@ line level    source
  171   1              SPI_RW_Reg(WRITE_REG + EN_AA, 0x01);      //  频道0自动 ACK应答允许     
  172   1              SPI_RW_Reg(WRITE_REG + EN_RXADDR, 0x01);  //  允许接收地址只有频道0，如果需要多频道可以参考Page21  
  173   1              SPI_RW_Reg(WRITE_REG + RF_CH, 0);        //   设置信道工作为2.4GHZ，收发必须一致
+<<<<<<< HEAD
 C51 COMPILER V9.53.0.0   NRF24L01                                                          04/16/2019 20:01:40 PAGE 4   
+=======
+C51 COMPILER V9.53.0.0   NRF24L01                                                          04/18/2019 15:56:43 PAGE 4   
+>>>>>>> 4c546ed... 1
 
  174   1              SPI_RW_Reg(WRITE_REG + RX_PW_P0, PLOAD_WIDTH); //设置接收数据长度，
  175   1              SPI_RW_Reg(WRITE_REG + RF_SETUP, 0x07);                 //设置发射速率为1MHZ，发射功率为最大值0dB

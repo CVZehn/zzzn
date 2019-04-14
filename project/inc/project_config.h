@@ -17,20 +17,22 @@
 
 #define uchar unsigned char
 #define uint unsigned int
-#define open    101
-#define close   102
-#define stop    103
-#define cont    104
-#define nopass    105
 #define command1 11
 #define command2 22
 #define com_new 0
-#define com_dead 5000
+#define com_dead 4000
 
 #define pole_up 1
 #define pole_down 2
 #define pole_stop 3
 
+#define pedestrian 1//行人
+#define vehicle    2//车辆
+#define all        3//行人和车辆
+
+#define keep_time        4000//5s
+
+#define Pedestrian_distance 200//行人
 
 extern uchar Semaphore;//信号量 ：红外和金属检测标志
 extern uchar comm_pole;//信号量 ：红外和金属检测标志
@@ -41,15 +43,18 @@ extern uchar comm_pole;//信号量 ：红外和金属检测标志
 
 extern  u8 RXBUFF[4],RXBUFF_L[4];//RXBUFF_L[4]:上一条收到的指令值
 extern  u8 TXBUFF[4];
-extern  u8 comlive_time;
+extern  uint comlive_time;
+extern  uint rise_time;
 extern uchar step;
     
 sfr P4   = 0xC0;
 
 sbit KEY1=P3^3;
 sbit KEY2=P3^4;
-sbit Metal=P3^6;
+sbit Metal=P0^4;
+sbit SW2 =P3^7;
 sbit SW1 =P4^1;
-sbit SW2 =P4^2;
+sbit ledg =P4^2;
+sbit ledr =P4^3;
 
 #endif

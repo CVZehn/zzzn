@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   MAIN                                                              04/17/2019 22:24:39 PAGE 1   
+C51 COMPILER V9.53.0.0   MAIN                                                              04/18/2019 22:40:43 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MAIN
@@ -25,48 +25,49 @@ line level    source
   15          {
   16   1          P0M1 = 0;  
   17   1          P0M0 = 0;   //设置为准双向口
-  18   1          
-  19   1          run=Delay150us;//初始化指针函数防止野指针的出现
-  20   1          timer0_Init();
-  21   1          InitADC();
-  22   1          usart2_init();
-  23   1          init_NRF24L01();
-  24   1              OLED_Init();                    //初始化OLED  
-  25   1              OLED_Clear(); 
-  26   1       //   OLED_ShowString(1,1,"34",16);
-  27   1              while(1)
-  28   1              {
-  29   2              MotorSpeedOrDirection(1,0);
-  30   2      //        sence();
-  31   2      //        remote_control();
-  32   2      //        nRF24L01_TX_Mode(TXBUFF);
-  33   2      //        Delay150us();
-  34   2      //        nRF24L01_RX_Mode(RXBUFF);
-  35   2      //        Delay150us();
-  36   2              }
-  37   1      }
-  38           
-  39          void Delay150us()               //@11.0592MHz
-  40          {
-  41   1              unsigned char i, j;
-  42   1      
-  43   1              _nop_();
+  18   1          SW1=1;
+  19   1          SW2=1;
+  20   1          Metal = 1;
+  21   1          run=MotorStop;//初始化指针函数防止野指针的出现
+  22   1          timer0_Init();
+  23   1          InitADC();
+  24   1          usart2_init();
+  25   1          init_NRF24L01();
+  26   1              OLED_Init();                    //初始化OLED  
+  27   1              OLED_Clear(); 
+  28   1          OLED_ShowString(10,0,"ready    ",16);
+  29   1              while(1)
+  30   1              {
+  31   2              sence();
+  32   2              nRF24L01_TX_Mode(TXBUFF);
+  33   2              Delay150us();
+  34   2              nRF24L01_RX_Mode(RXBUFF);
+  35   2              Delay150us();
+  36   2              remote_control();
+  37   2              }
+  38   1      }
+  39           
+  40          void Delay150us()               //@11.0592MHz
+  41          {
+  42   1              unsigned char i, j;
+  43   1      
   44   1              _nop_();
   45   1              _nop_();
-  46   1              i = 2;
-  47   1              j = 153;
-  48   1              do
-  49   1              {
-  50   2                      while (--j);
-  51   2              } while (--i);
-  52   1      }
+  46   1              _nop_();
+  47   1              i = 2;
+  48   1              j = 153;
+  49   1              do
+  50   1              {
+  51   2                      while (--j);
+  52   2              } while (--i);
+  53   1      }
 
+C51 COMPILER V9.53.0.0   MAIN                                                              04/18/2019 22:40:43 PAGE 2   
 
-C51 COMPILER V9.53.0.0   MAIN                                                              04/17/2019 22:24:39 PAGE 2   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     59    ----
-   CONSTANT SIZE    =   ----    ----
+   CODE SIZE        =    106    ----
+   CONSTANT SIZE    =     10    ----
    XDATA SIZE       =     16    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----

@@ -1,4 +1,5 @@
 ".\Objects\main.obj",
-".\Objects\NRF24L01.obj" 
+".\Objects\NRF24L01.obj",
+".\Objects\time.obj" 
 TO ".\Objects\Ò£¿ØÆ÷" 
 PRINT(".\Listings\Ò£¿ØÆ÷.m51") RAMSIZE(256) 
