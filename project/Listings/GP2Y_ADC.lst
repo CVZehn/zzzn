@@ -1,0 +1,47 @@
+C51 COMPILER V9.53.0.0   GP2Y_ADC                                                          04/17/2019 21:01:33 PAGE 1   
+
+
+C51 COMPILER V9.53.0.0, COMPILATION OF MODULE GP2Y_ADC
+OBJECT MODULE PLACED IN .\Objects\GP2Y_ADC.obj
+COMPILER INVOKED BY: D:\keil\C51\BIN\C51.EXE scr\GP2Y_ADC.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\inc) DEBUG OBJECTEXT
+                    -END PRINT(.\Listings\GP2Y_ADC.lst) OBJECT(.\Objects\GP2Y_ADC.obj)
+
+line level    source
+
+   1          #include "project_config.h"
+   2          
+   3          
+   4          void InitADC()
+   5          {
+   6   1          P1ASF = 0x01;                   //设置P1.0口为AD口
+   7   1          ADC_RES = 0;                    //清除结果寄存器
+   8   1          ADC_CONTR = ADC_POWER | ADC_SPEEDLL;
+   9   1          delay(2);                       //ADC上电并延时
+  10   1      }
+  11          
+  12          uchar GetADCResult(uchar ch)
+  13          {
+  14   1          ADC_CONTR = ADC_POWER | ADC_SPEEDLL | ch | ADC_START;
+  15   1          _nop_();                        //等待4个NOP
+  16   1          _nop_();
+  17   1          _nop_();
+  18   1          _nop_();
+  19   1          while (!(ADC_CONTR & ADC_FLAG));//等待ADC转换完成
+  20   1          ADC_CONTR &= ~ADC_FLAG;         //Close ADC
+  21   1      
+  22   1          return ADC_RES;                 //返回ADC结果
+  23   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     35    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      4    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

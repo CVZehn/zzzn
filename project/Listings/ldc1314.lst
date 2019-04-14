@@ -1,0 +1,343 @@
+C51 COMPILER V9.53.0.0   LDC1314                                                           04/17/2019 17:36:23 PAGE 1   
+
+
+C51 COMPILER V9.53.0.0, COMPILATION OF MODULE LDC1314
+OBJECT MODULE PLACED IN .\Objects\ldc1314.obj
+COMPILER INVOKED BY: D:\keil\C51\BIN\C51.EXE scr\ldc1314.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\inc) DEBUG OBJECTEXTE
+                    -ND PRINT(.\Listings\ldc1314.lst) OBJECT(.\Objects\ldc1314.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #include "intrins.h"
+   3          #include "ldc1314.h"
+   4          #include "timer0.h"
+   5          #include "oled.h" 
+   6          
+   7          sbit IIC_SCL=P0^1;
+   8          sbit IIC_SDA=P0^2;
+   9          sbit XCLK=P0^3;
+  10          
+  11          void Delay5us()         //@11.0592MHz
+  12          {
+  13   1              unsigned char i;
+  14   1      
+  15   1              i = 50;
+  16   1              while (--i);
+  17   1      }
+  18          
+  19          
+  20          //初始化IIC
+  21          void IIC_Init(void)
+  22          {                                            
+  23   1              IIC_SCL=1;
+  24   1              IIC_SDA=1;
+  25   1      }
+  26          //产生IIC起始信号
+  27          void IIC_Start(void)
+  28          {
+  29   1              IIC_SDA=1;                
+  30   1              IIC_SCL=1;
+  31   1              Delay5us();
+  32   1              IIC_SDA=0;//START:when CLK is high,DATA change form high to low 
+  33   1              Delay5us();
+  34   1              IIC_SCL=0;//钳住I2C总线，准备发送或接收数据 
+  35   1              Delay5us();
+  36   1      }         
+  37          //产生IIC停止信号
+  38          void IIC_Stop(void)
+  39          {
+  40   1              IIC_SCL=0;
+  41   1              IIC_SDA=0;//STOP:when CLK is high DATA change form low to high
+  42   1              Delay5us();
+  43   1              IIC_SCL=1; 
+  44   1              IIC_SDA=1;//发送I2C总线结束信号
+  45   1              Delay5us();                                                             
+  46   1      }
+  47          //等待应答信号到来
+  48          //返回值：1，接收应答失败
+  49          //        0，接收应答成功
+  50          u8 IIC_Wait_Ack(void)
+  51          {
+  52   1              u16 ucErrTime=0;//u8 ucErrTime=0;
+  53   1              IIC_SDA=1;Delay5us();//delay_us(1);        
+  54   1              IIC_SCL=1;Delay5us();//delay_us(1);      
+C51 COMPILER V9.53.0.0   LDC1314                                                           04/17/2019 17:36:23 PAGE 2   
+
+  55   1              while(IIC_SDA)
+  56   1              {
+  57   2                      ucErrTime++;
+  58   2                      if(ucErrTime>250)//if(ucErrTime>250)
+  59   2                      {
+  60   3                              IIC_Stop();
+  61   3                 // break;
+  62   3                              return 1;
+  63   3                      }
+  64   2              }
+  65   1          Delay5us();Delay5us();
+  66   1              IIC_SCL=0;//时钟输出0      
+  67   1              return 0;  
+  68   1      } 
+  69          //产生ACK应答
+  70          void IIC_Ack(void)
+  71          {
+  72   1              IIC_SCL=0;
+  73   1              Delay5us();//delay_us(2);
+  74   1              IIC_SDA=0;
+  75   1              Delay5us();//delay_us(2);
+  76   1              IIC_SCL=1;
+  77   1              Delay5us();//delay_us(2);
+  78   1              IIC_SCL=0;
+  79   1      }
+  80          //不产生ACK应答             
+  81          void IIC_NAck(void)
+  82          {
+  83   1              IIC_SCL=0;
+  84   1              IIC_SDA=1;
+  85   1              Delay5us();//delay_us(2);
+  86   1              IIC_SCL=1;
+  87   1              Delay5us();//delay_us(2);
+  88   1              IIC_SCL=0;
+  89   1      }                                                                            
+  90          //IIC发送一个字节
+  91          //返回从机有无应答
+  92          //1，有应答
+  93          //0，无应答                       
+  94          void IIC_Send_Byte(u8 txd)
+  95          {                        
+  96   1          u8 t;   
+  97   1          IIC_SCL=0;//拉低时钟开始数据传输
+  98   1          for(t=0;t<8;t++)
+  99   1          {              
+ 100   2              IIC_SDA=(txd&0x80)>>7;
+ 101   2              txd<<=1;          
+ 102   2                      Delay5us();//delay_us(2);   //对TEA5767这三个延时都是必须的
+ 103   2                      IIC_SCL=1;
+ 104   2                      Delay5us();//delay_us(2); 
+ 105   2                      IIC_SCL=0;      
+ 106   2                      Delay5us();//delay_us(2);
+ 107   2          }    
+ 108   1      }           
+ 109          //读1个字节，ack=1时，发送ACK，ack=0，发送nACK   
+ 110          u8 IIC_Read_Byte(unsigned char ack)
+ 111          {
+ 112   1              unsigned char i,receive=0;
+ 113   1              IIC_SDA=0;
+ 114   1              Delay5us();//delay_us(2);
+ 115   1          for(i=0;i<8;i++ )
+ 116   1              {
+C51 COMPILER V9.53.0.0   LDC1314                                                           04/17/2019 17:36:23 PAGE 3   
+
+ 117   2              IIC_SCL=0; 
+ 118   2              Delay5us();//delay_us(2);
+ 119   2              receive<<=1;
+ 120   2              IIC_SCL=1; 
+ 121   2              Delay5us();//delay_us(2);
+ 122   2              if(IIC_SDA)receive++;   
+ 123   2          }                           
+ 124   1          if (ack)
+ 125   1              IIC_NAck();//发送nACK
+ 126   1          else
+ 127   1              IIC_Ack(); //发送ACK   
+ 128   1          return receive;
+ 129   1      }
+ 130          
+ 131          void LCD_write_16bit(u8 regaddr,u16 dat)        //写data到寄存器，regaddr为寄存器的地址
+ 132          {
+ 133   1              u16 data_temp = 0;
+ 134   1              u16 data_temp1 = 0;
+ 135   1              u8 Ack1,Ack2,Ack3,Ack4;
+ 136   1              Ack1=Ack2=Ack3=Ack4=2;
+ 137   1              
+ 138   1              IIC_Start();
+ 139   1              IIC_Send_Byte(LDC1314_ADDR_WRITE);      //发送设备地址，写
+ 140   1              Ack1 = IIC_Wait_Ack();
+ 141   1              
+ 142   1              IIC_Send_Byte(regaddr); //寄存器地址
+ 143   1              Ack2 = IIC_Wait_Ack();
+ 144   1              
+ 145   1              IIC_Send_Byte(dat>>8);  //发送高八位
+ 146   1              Ack3 = IIC_Wait_Ack();
+ 147   1              
+ 148   1              IIC_Send_Byte(dat&0xff);        //发送低八位
+ 149   1              Ack4 = IIC_Wait_Ack();
+ 150   1              
+ 151   1              IIC_Stop();//产生一个停止条件
+ 152   1      
+ 153   1      
+ 154   1          OLED_ShowNum(50,2,Ack1,1,16);
+ 155   1          OLED_ShowNum(60,2,Ack2,1,16);
+ 156   1          OLED_ShowNum(70,2,Ack3,1,16);
+ 157   1          OLED_ShowNum(80,2,Ack4,1,16);
+ 158   1      }
+ 159          
+ 160          
+ 161          
+ 162          u16 LCD_read_16bit(u8 regaddr)  //读寄存器regaddr的值，regaddr为寄存器的地址
+ 163          {
+ 164   1              u16 data_temp = 0;
+ 165   1              u16 data_temp1 = 0;
+ 166   1              u8 Ack1,Ack2,Ack3,Ack4;
+ 167   1              Ack1=Ack2=Ack3=Ack4=2;
+ 168   1              
+ 169   1              IIC_Start();
+ 170   1              IIC_Send_Byte(LDC1314_ADDR_WRITE);      //发送设备地址，写
+ 171   1              Ack1 = IIC_Wait_Ack();
+ 172   1              IIC_Send_Byte(regaddr); //寄存器地址
+ 173   1              Ack2 = IIC_Wait_Ack();
+ 174   1              
+ 175   1              IIC_Start();
+ 176   1              IIC_Send_Byte(LDC1314_ADDR_READ);//发送设备地址，读
+ 177   1              Ack3 = IIC_Wait_Ack();
+ 178   1              data_temp1 = IIC_Read_Byte(0);//IIC读取高位字节
+C51 COMPILER V9.53.0.0   LDC1314                                                           04/17/2019 17:36:23 PAGE 4   
+
+ 179   1              data_temp = IIC_Read_Byte(0);//IIC读取低位字节
+ 180   1              IIC_Stop();//产生一个停止条件
+ 181   1              
+ 182   1          OLED_ShowNum(50,0,Ack1,1,16);
+ 183   1          OLED_ShowNum(60,0,Ack2,1,16);
+ 184   1          OLED_ShowNum(70,0,Ack3,1,16);
+ 185   1          OLED_ShowNum(80,0,Ack4,1,16);
+ 186   1              //printf (" Ack1 %d\r\n Ack2 %d\r\n Ack3 %d, \r\n",Ack1,Ack2,Ack3);
+ 187   1              //printf ("data_temp1 %d,data_temp %d \r\n",data_temp1,data_temp);
+ 188   1              
+ 189   1              data_temp = data_temp + (data_temp1<<8) ;       //数据合并
+ 190   1              
+ 191   1              //printf("%d \r\n",data_temp); //串口发送看结果无误
+ 192   1              return data_temp;
+ 193   1      
+ 194   1      
+ 195   1      
+ 196   1      }
+ 197          
+ 198          
+ 199          
+ 200          u16 LDC_read_CHx(u8 CHx)        //读Channel x Conversion Result
+ 201          {
+ 202   1              u8 reg_addr1 = 0;       //MSB地址
+ 203   1              u8 reg_addr = 0;        //LSB地址
+ 204   1              u16 dat = 0;                    //接收到的数据
+ 205   1              
+ 206   1              switch(CHx)
+ 207   1              {
+ 208   2                      case 0:
+ 209   2                      {
+ 210   3                              reg_addr1 = LDC13xx16xx_CMD_DATA_MSB_CH0;
+ 211   3                              reg_addr        = LDC13xx16xx_CMD_DATA_LSB_CH0; //不知道LSB寄存器有什么用，手册也没见有
+ 212   3                      }break;
+ 213   2                      case 1:
+ 214   2                      {
+ 215   3                              reg_addr1 = LDC13xx16xx_CMD_DATA_MSB_CH1;
+ 216   3                              reg_addr        = LDC13xx16xx_CMD_DATA_LSB_CH1;
+ 217   3                      }break;
+ 218   2                      case 2:
+ 219   2                      {
+ 220   3                              reg_addr1 = LDC13xx16xx_CMD_DATA_MSB_CH2;
+ 221   3                              reg_addr        = LDC13xx16xx_CMD_DATA_LSB_CH2;
+ 222   3                      }break;
+ 223   2                      case 3:
+ 224   2                      {
+ 225   3                              reg_addr1 = LDC13xx16xx_CMD_DATA_MSB_CH3;
+ 226   3                              reg_addr        = LDC13xx16xx_CMD_DATA_LSB_CH3;
+ 227   3                      }break;
+ 228   2                      default: return 0;      //输入错误
+ 229   2                      
+ 230   2              }
+ 231   1              //不知道LSB寄存器有什么用，手册也没见有
+ 232   1              dat = LCD_read_16bit(reg_addr); //读取寄存器值
+ 233   1      //      dat = dat & 0x0FFF;     //转换结果在 [11:0]，把它取出来
+ 234   1              
+ 235   1              return dat;
+ 236   1                      
+ 237   1      
+ 238   1      
+ 239   1      }
+ 240          
+C51 COMPILER V9.53.0.0   LDC1314                                                           04/17/2019 17:36:23 PAGE 5   
+
+ 241          void LDC1314_Init(void) //初始化LDC1314和I2C
+ 242          {
+ 243   1              IIC_Init();                                                     //IIC初始化
+ 244   1      //      LDC_ADDR = 0;   //LDC的7bit地址为0X2A，注意是7bit 即 0101 010_  最低位为读写位
+ 245   1      //      LDC_SD = 0;             //退出Shutdown Mode
+ 246   1              delay(500);     //延时500ms
+ 247   1              
+ 248   1              
+ 249   1              LCD_write_16bit(LDC13xx16xx_CMD_REF_COUNT_CH0,0X04D6);
+ 250   1              
+ 251   1              LCD_write_16bit(LDC13xx16xx_CMD_REF_COUNT_CH1,0X04D6);
+ 252   1              LCD_write_16bit(LDC13xx16xx_CMD_REF_COUNT_CH2,0X04D6);
+ 253   1              LCD_write_16bit(LDC13xx16xx_CMD_REF_COUNT_CH3,0X04D6);
+ 254   1              
+ 255   1              LCD_write_16bit(LDC13xx16xx_CMD_SETTLE_COUNT_CH0,0X000A);
+ 256   1              LCD_write_16bit(LDC13xx16xx_CMD_SETTLE_COUNT_CH1,0X000A);
+ 257   1              LCD_write_16bit(LDC13xx16xx_CMD_SETTLE_COUNT_CH2,0X000A);
+ 258   1              LCD_write_16bit(LDC13xx16xx_CMD_SETTLE_COUNT_CH3,0X000A);
+ 259   1              
+ 260   1              LCD_write_16bit(LDC13xx16xx_CMD_CLOCK_DIVIDERS_CH0,0X1002);
+ 261   1              LCD_write_16bit(LDC13xx16xx_CMD_CLOCK_DIVIDERS_CH1,0X1002);
+ 262   1              LCD_write_16bit(LDC13xx16xx_CMD_CLOCK_DIVIDERS_CH2,0X1002);
+ 263   1              LCD_write_16bit(LDC13xx16xx_CMD_CLOCK_DIVIDERS_CH3,0X1002);
+ 264   1              
+ 265   1              LCD_write_16bit(LDC13xx16xx_CMD_ERROR_CONFIG,0X0000);
+ 266   1              
+ 267   1              LCD_write_16bit(LDC13xx16xx_CMD_MUX_CONFIG,0x020c);
+ 268   1              
+ 269   1              LCD_write_16bit(LDC13xx16xx_CMD_DRIVE_CURRENT_CH0,0x9800);
+ 270   1              LCD_write_16bit(LDC13xx16xx_CMD_DRIVE_CURRENT_CH1,0x9800);
+ 271   1              LCD_write_16bit(LDC13xx16xx_CMD_DRIVE_CURRENT_CH2,0x9800);
+ 272   1              LCD_write_16bit(LDC13xx16xx_CMD_DRIVE_CURRENT_CH3,0x9800);
+ 273   1      
+ 274   1      //      LCD_write_16bit(LDC13xx16xx_CMD_CONFIG,0x0104);         //bit13 清零 退出睡眠模式
+ 275   1              
+ 276   1      
+ 277   1              LCD_write_16bit(LDC13xx16xx_CMD_RESET_DEVICE,0x0600);
+ 278   1              LCD_write_16bit(LDC13xx16xx_CMD_SYSTEM_CLOCK_CONFIG,0x0200);
+ 279   1              LCD_write_16bit(LDC13xx16xx_CMD_CONFIG,0x1601);
+ 280   1      
+ 281   1      }
+ 282          
+ 283          
+ 284          
+ 285          
+ 286          
+ 287          
+ 288          
+ 289          
+ 290          
+ 291          
+ 292          
+ 293          
+ 294          
+ 295          
+ 296          
+ 297          
+ 298          
+ 299          
+ 300          
+ 301          
+ 302          
+C51 COMPILER V9.53.0.0   LDC1314                                                           04/17/2019 17:36:23 PAGE 6   
+
+ 303          
+ 304          
+ 305          
+ 306          
+ 307          
+ 308          
+ 309              
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    826    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      4      15
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

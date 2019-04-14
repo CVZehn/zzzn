@@ -1,0 +1,353 @@
+C51 COMPILER V9.53.0.0   ASA                                                               04/17/2019 15:50:58 PAGE 1   
+
+
+C51 COMPILER V9.53.0.0, COMPILATION OF MODULE ASA
+OBJECT MODULE PLACED IN .\Objects\asa.obj
+COMPILER INVOKED BY: D:\keil\C51\BIN\C51.EXE asa.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\inc) DEBUG OBJECTEXTEND PRINT
+                    -(.\Listings\asa.lst) OBJECT(.\Objects\asa.obj)
+
+line level    source
+
+   1          　　void InitLDC1314（void）
+*** ERROR C100 IN LINE 1 OF asa.c: unprintable character 0xA1 skipped
+*** ERROR C100 IN LINE 1 OF asa.c: unprintable character 0xA1 skipped
+*** ERROR C100 IN LINE 1 OF asa.c: unprintable character 0xA1 skipped
+*** ERROR C100 IN LINE 1 OF asa.c: unprintable character 0xA1 skipped
+*** ERROR C100 IN LINE 1 OF asa.c: unprintable character 0xA3 skipped
+*** ERROR C100 IN LINE 1 OF asa.c: unprintable character 0xA8 skipped
+*** ERROR C100 IN LINE 1 OF asa.c: unprintable character 0xA3 skipped
+*** ERROR C100 IN LINE 1 OF asa.c: unprintable character 0xA9 skipped
+   2          
+   3          　　{
+*** ERROR C100 IN LINE 3 OF asa.c: unprintable character 0xA1 skipped
+*** ERROR C100 IN LINE 3 OF asa.c: unprintable character 0xA1 skipped
+*** ERROR C100 IN LINE 3 OF asa.c: unprintable character 0xA1 skipped
+*** ERROR C100 IN LINE 3 OF asa.c: unprintable character 0xA1 skipped
+*** ERROR C136 IN LINE 3 OF asa.c: 'InitLDC1314void': 'void' on variable
+*** ERROR C129 IN LINE 3 OF asa.c: missing ';' before '{'
+   4          
+   5          　　I2C_Init（）;
+   6          
+   7          　　while（WordRead1314（DEVICE_ID）！=0x3025）;//等待，I2C正常
+   8          
+   9          　　//WordWrite1314（RESET_DEV，0x8800）;
+  10          
+  11          　　/*重启LDC1314*/
+  12          
+  13          　　WordWrite1314（CONFIG，0x2451）;
+  14          
+  15          　　/*默认值，睡眠模式开，方便配置*/
+  16          
+  17          　　WordWrite1314（CLOCK_DIVIDERS_CH0，0X500a）;//fSENSOR不分频，fCLK 2分频
+  18          
+  19          　　/* 时钟源分频选择，分频系数1，1
+  20          
+  21          　　Using L and C， 得fSENSOR = 1/2π&TImes;sqrt（L &TImes;C）
+  22          
+  23          　　注意fSENSOR须小于8.75 MHz，fSENSOR分频系数才能置1
+  24          
+  25          　　注意fREF0须至少大于 4 × fSENSOR，以决定fREF0分频系数
+  26          
+  27          　　fin0 = fSENSOR0/CH0_FIN_DIVIDER
+  28          
+  29          　　fREF0 = fCLK / CH0_FREF_DIVIDER
+  30          
+  31          　　*
+  32          
+  33          　　WordWrite1314（SETTLECOUNT_CH0，0x0A60）;
+  34          
+  35          　　/* 建立（Settling）时间设置
+  36          
+  37          　　计算得Q=Rp*sqrt（C/L）
+  38          
+  39          　　寄存器值小于10取10，大于10取其值，且应满足以下条件：
+  40          
+C51 COMPILER V9.53.0.0   ASA                                                               04/17/2019 15:50:58 PAGE 2   
+
+  41          　　CHx_SETTLECOUNT ≥ QSENSORx × fREFx / （16 × fSENSORx） （10进制）
+  42          
+  43          　　（1）fSENSORx:x通道传感器频率
+  44          
+  45          　　（2）fREFx:x通道参考频率
+  46          
+  47          　　（3）QSENSORx：品质因数，Q=Rp ×sqrt（C/L）
+  48          
+  49          　　注意，不等式右边算出有小数则向上取整
+  50          
+  51          　　建立时间tSx = （CH0_SETTLECOUNT*16） / fREF0
+  52          
+  53          　　通道切换时间tCsd = Channel Switch Delay = 692 ns + 5 / fref （us）
+  54          
+  55          　　*/
+  56          
+  57          　　WordWrite1314（RCOUNT_CH0，0xFFFF）;
+  58          
+  59          　　/*转换时间设置
+  60          
+  61          　　得转换时间tCx = TSAMPLE（采样时间） – tSx – tCsd （us）
+  62          
+  63          　　由下式算出寄存器的值（有小数则向下取整（舍去））：
+  64          
+  65          　　转换时间tCx = （CHx_RCOUNT × 16） / fREFx （10进制）
+  66          
+  67          　　注意寄存器的值化为16进制
+  68          
+  69          　　*/
+  70          
+  71          　　/*使用ERROR_CONFIG默认值，错误中断关闭*/
+  72          
+  73          　　WordWrite1314（DRIVE_CURRENT_CH0，0x9800）;
+  74          
+  75          　　/*传感器驱动电流设置，使用请同时注意CONFIG寄存器相关配置
+  76          
+  77          　　查数据手册的Figure 15，得IDRIVE值（10进制），INIT_DRIVE值不使用，保持默认
+  78          
+  79          　　使用CH0_IDRIVE［15:11］时，Rp Override须打开
+  80          
+  81          　　使用CH0_INIT_IDRIVE［10:6］时，保证AUTO_AMP_DIS位不置位
+  82          
+  83          　　*/
+  84          
+  85          　　//WordWrite1314（MUX_CONFIG，0x801）;
+  86          
+  87          　　/* 多通道转换选择，输入尖峰脉冲滤波器带宽选择，使用请同时注意CONFIG寄存器相关配置！
+  88          
+  89          　　（a）置AUTOSCAN_EN位为b1使能连续模式（sequential mode）
+  90          
+  91          　　（b）置RR_SEQUENCE位为b00使能两个通道的数据转换（channel 0，channel 1）
+  92          
+  93          　　（c）置DEGLITCH位为b100设定输入尖峰脉冲滤波器带宽，此值必须高于谐振频率fTank！
+  94          
+  95          　　*/
+  96          
+  97          　　//WordWrite1314（OFFSET_CH0，0x00）;
+  98          
+  99          　　/*频率偏移（补偿）设置
+ 100          
+ 101          　　可以设置从每个数据值中减去偏移值，以补偿频率偏移或最大化动态范围的样本数据
+ 102          
+C51 COMPILER V9.53.0.0   ASA                                                               04/17/2019 15:50:58 PAGE 3   
+
+ 103          　　fOFFSET0 = CH0_OFFSET * （fREF0/2^16）
+ 104          
+ 105          　　且偏移值应小于 fSENSORx_MIN / fREFx
+ 106          
+ 107          　　*/
+ 108          
+ 109          　　//WordWrite1314（RESET_DEV，0x00）;
+ 110          
+ 111          　　/*输出增益设置，［10:9］，对所有通道有效
+ 112          
+ 113          　　对于传感器信号变化量小于满量程25％的系统，设置输出增益可以提供更高的分辨率（精度）
+ 114          
+ 115          　　*/
+ 116          
+ 117          　　/*
+ 118          
+ 119          　　状态寄存器：STATUS，ERROR_CONFIG
+ 120          
+ 121          　　*/
+ 122          
+ 123          　　WordWrite1314（CONFIG，0x1501）;
+ 124          
+ 125          　　/*默认连续转换（单）通道0，睡眠模式关，Rp Override开
+ 126          
+ 127          　　低功耗模式关，传感器自动幅度校正（AUTO_AMP）关，Ref时钟源选外部时钟源
+ 128          
+ 129          　　INTB中断开，高电流驱动关*/
+ 130          
+ 131          　　}
+ 132          
+ 133          　　/*读取LDC1314转换结果，输入参数为选择通道数*/
+ 134          
+ 135          　　uint LDC1314_Result（uchar Channal）
+ 136          
+ 137          　　{
+ 138          
+ 139          　　uint temp=0;
+ 140          
+ 141          　　switch（Channal）
+ 142          
+ 143          　　{
+ 144          
+ 145          　　case 0x00：
+ 146          
+ 147          　　temp=WordRead1314（DATA_CH0）; //通道0
+ 148          
+ 149          　　break;
+ 150          
+ 151          　　case 0x01：
+ 152          
+ 153          　　temp=WordRead1314（DATA_CH1）; //通道1
+ 154          
+ 155          　　break;
+ 156          
+ 157          　　case 0x02：
+ 158          
+ 159          　　temp=WordRead1314（DATA_CH2）; //通道2
+ 160          
+ 161          　　break;
+ 162          
+ 163          　　case 0x03：
+ 164          
+C51 COMPILER V9.53.0.0   ASA                                                               04/17/2019 15:50:58 PAGE 4   
+
+ 165          　　temp=WordRead1314（DATA_CH3）; //通道3
+ 166          
+ 167          　　break;
+ 168          
+ 169          　　default ：
+ 170          
+ 171          　　break;
+ 172          
+ 173          　　}
+ 174          
+ 175          　　while（（temp&0xF000）！=0）;
+ 176          
+ 177          　　/*有错误Flag！，有输出增益时注意此句，可能出错！
+ 178          
+ 179          　　0x000 = under range，0xfff = over range
+ 180          
+ 181          　　*/
+ 182          
+ 183          　　return temp;
+ 184          
+ 185          　　}
+ 186          
+ 187          　　LDC1314.H文件
+ 188          
+ 189          　　#ifndef __LDC1314_H
+ 190          
+ 191          　　#define __LDC1314_H
+ 192          
+ 193          　　#include 《msp430f169.h》
+ 194          
+ 195          　　#include “config.h”
+ 196          
+ 197          　　static void I2C_Init（）;
+ 198          
+ 199          　　static void I2C_Start（）;
+ 200          
+ 201          　　static void I2C_Stop（）;
+ 202          
+ 203          　　static void I2C_SendACK（uchar ack）;
+ 204          
+ 205          　　static uchar I2C_RecvACK（）;
+ 206          
+ 207          　　static uchar I2C_SendByte（uchar dat）;
+ 208          
+ 209          　　static uchar I2C_RecvACK（）;
+ 210          
+ 211          　　static void WordWrite1314（uchar REG_Address，uint REG_data）;
+ 212          
+ 213          　　static uint WordRead1314（uchar REG_Address）;
+ 214          
+ 215          　　void InitLDC1314（void）;
+ 216          
+ 217          　　uint LDC1314_Result（uchar Channal）;
+ 218          
+ 219          　　//****定义LDC1314硬件接口（不同硬件修改此处即可）***********
+ 220          
+ 221          　　#define LDC1314DIR P1DIR
+ 222          
+ 223          　　#define LDC1314OUT P1OUT
+ 224          
+ 225          　　#define LDC1314IN P1IN
+ 226          
+C51 COMPILER V9.53.0.0   ASA                                                               04/17/2019 15:50:58 PAGE 5   
+
+ 227          　　#define LDC_SCL BIT2
+ 228          
+ 229          　　#define LDC_SDA BIT3
+ 230          
+ 231          　　#define LDC_INTB BIT4//中断
+ 232          
+ 233          　　#define LDC_SD BIT5//置高，则进入掉电模式
+ 234          
+ 235          　　//*********I2C硬件相关接口函数**************
+ 236          
+ 237          　　#define LDC_SCL_OUT（） LDC1314DIR |= LDC_SCL // SCL脚输出
+ 238          
+ 239          　　#define LDC_SCL_H（） LDC1314OUT |= LDC_SCL // SCL拉高
+ 240          
+ 241          　　#define LDC_SCL_L（） LDC1314OUT &= ~LDC_SCL // SCL拉低
+ 242          
+ 243          　　#define LDC_SDA_OUT（） LDC1314DIR |= LDC_SDA // SDA脚输出
+ 244          
+ 245          　　#define LDC_SDA_H（） LDC1314OUT |= LDC_SDA // SDA拉高
+ 246          
+ 247          　　#define LDC_SDA_L（） LDC1314OUT &= ~LDC_SDA // SDA拉低
+ 248          
+ 249          　　#define LDC_SDA_IN（） LDC1314DIR &= ~LDC_SDA // SDA脚输入
+ 250          
+ 251          　　#define LDC_SDA_DAT（） （LDC1314IN&LDC_SDA） // SDA输入数据
+ 252          
+ 253          　　#define SlaveAddress 0x2A //IIC写入时的地址字节数据，+1为读取，ADDR接高电平，地址则为0x2B
+ 254          
+ 255          　　#define DATA_CH0 0x00 //Channel 0 Conversion Result and Error Status
+ 256          
+ 257          　　#define DATA_CH1 0x02
+ 258          
+ 259          　　#define DATA_CH2 0x04
+ 260          
+ 261          　　#define DATA_CH3 0x06
+ 262          
+ 263          　　#define RCOUNT_CH0 0x08 //Reference Count setting for Channel 0
+ 264          
+ 265          　　#define RCOUNT_CH1 0x09
+ 266          
+ 267          　　#define RCOUNT_CH2 0x0A
+ 268          
+ 269          　　#define RCOUNT_CH3 0x0B
+ 270          
+ 271          　　#define OFFSET_CH0 0x0C //Offset value for Channel 0
+ 272          
+ 273          　　#define OFFSET_CH1 0x0D
+ 274          
+ 275          　　#define OFFSET_CH2 0x0E
+ 276          
+ 277          　　#define OFFSET_CH3 0x0F
+ 278          
+ 279          　　#define SETTLECOUNT_CH0 0x10 //Channel 0 Settling Reference Count
+ 280          
+ 281          　　#define SETTLECOUNT_CH1 0x11
+ 282          
+ 283          　　#define SETTLECOUNT_CH2 0x12
+ 284          
+ 285          　　#define SETTLECOUNT_CH3 0x13
+ 286          
+ 287          　　#define CLOCK_DIVIDERS_CH0 0x14
+ 288          
+C51 COMPILER V9.53.0.0   ASA                                                               04/17/2019 15:50:58 PAGE 6   
+
+ 289          　　#define CLOCK_DIVIDERS_CH1 0x15
+ 290          
+ 291          　　#define CLOCK_DIVIDERS_CH2 0x16
+ 292          
+ 293          　　#define CLOCK_DIVIDERS_CH3 0x17
+ 294          
+ 295          　　#define STATUS 0x18 //Device Status Report
+ 296          
+ 297          　　#define ERROR_CONFIG 0x19 //Error Reporting Configuration
+ 298          
+ 299          　　#define MUX_CONFIG 0x1A //Channel Multiplexing Configuration
+ 300          
+ 301          　　#define CONFIG 0x1B //Conversion Configuration
+ 302          
+ 303          　　#define RESET_DEV 0x1C //Reset Device
+ 304          
+ 305          　　#define DRIVE_CURRENT_CH0 0x1E //Channel 0 sensor current drive configuration
+ 306          
+ 307          　　#define DRIVE_CURRENT_CH1 0x1F
+ 308          
+ 309          　　#define DRIVE_CURRENT_CH2 0x20
+ 310          
+ 311          　　#define DRIVE_CURRENT_CH3 0x21
+ 312          
+ 313          　　#define MANUFACTURER_ID 0x7E //厂商ID，默认值0x5449
+ 314          
+ 315          　　#define DEVICE_ID 0x7F //设备ID，默认值0x3054
+ 316          
+ 317          　　#endif
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  14 ERROR(S)

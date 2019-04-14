@@ -1,1 +1,1 @@
-"scr\oled.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(.\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\oled.lst) OBJECT(.\Objects\oled.obj)
+"scr\oled.c" LARGE OPTIMIZE (8,SPEED) BROWSE INCDIR(.\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\oled.lst) OBJECT(.\Objects\oled.obj)

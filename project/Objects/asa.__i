@@ -1,0 +1,1 @@
+"asa.c" LARGE OPTIMIZE (8,SPEED) BROWSE INCDIR(.\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\asa.lst) OBJECT(.\Objects\asa.obj)

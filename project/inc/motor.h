@@ -13,5 +13,6 @@
 void MotorSpeedOrDirection(uint var, uchar state);        //控制电机转速和方向
 void ConStep(uchar var);			//步进控制器
 void MotorStop(void);    			//停止
+void move(uchar i);
 
 #endif

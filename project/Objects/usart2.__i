@@ -1,0 +1,1 @@
+"scr\usart2.c" LARGE OPTIMIZE (8,SPEED) BROWSE INCDIR(.\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\usart2.lst) OBJECT(.\Objects\usart2.obj)

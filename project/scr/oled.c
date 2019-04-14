@@ -43,7 +43,7 @@ void delay_ms(unsigned int ms)
 /**********************************************
 //IIC Start
 **********************************************/
-void IIC_Start()
+void IIC_Start_OLED()
 {
     	
 	OLED_SCLK_Set() ;
@@ -56,7 +56,7 @@ void IIC_Start()
 /**********************************************
 //IIC Stop
 **********************************************/
-void IIC_Stop()
+void IIC_Stop_OLED()
 {
 OLED_SCLK_Set() ;
 //	OLED_SCLK_Clr();
@@ -65,7 +65,7 @@ OLED_SCLK_Set() ;
 	
 }
 
-void IIC_Wait_Ack()
+void IIC_Wait_Ack_OLED()
 {
 
 	OLED_SCLK_Set() ;
@@ -101,28 +101,28 @@ void Write_IIC_Byte(unsigned char IIC_Byte)
 **********************************************/
 void Write_IIC_Command(unsigned char IIC_Command)
 {
-   IIC_Start();
+   IIC_Start_OLED();
    Write_IIC_Byte(0x78);            //Slave address,SA0=0
-	IIC_Wait_Ack();	
+	IIC_Wait_Ack_OLED();	
    Write_IIC_Byte(0x00);			//write command
-	IIC_Wait_Ack();	
+	IIC_Wait_Ack_OLED();	
    Write_IIC_Byte(IIC_Command); 
-	IIC_Wait_Ack();	
-   IIC_Stop();
+	IIC_Wait_Ack_OLED();	
+   IIC_Stop_OLED();
 }
 /**********************************************
 // IIC Write Data
 **********************************************/
 void Write_IIC_Data(unsigned char IIC_Data)
 {
-   IIC_Start();
+   IIC_Start_OLED();
    Write_IIC_Byte(0x78);			//D/C#=0; R/W#=0
-	IIC_Wait_Ack();	
+	IIC_Wait_Ack_OLED();	
    Write_IIC_Byte(0x40);			//write data
-	IIC_Wait_Ack();	
+	IIC_Wait_Ack_OLED();	
    Write_IIC_Byte(IIC_Data);
-	IIC_Wait_Ack();	
-   IIC_Stop();
+	IIC_Wait_Ack_OLED();	
+   IIC_Stop_OLED();
 }
 void OLED_WR_Byte(unsigned dat,unsigned cmd)
 {

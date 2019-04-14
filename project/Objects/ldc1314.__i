@@ -1,0 +1,1 @@
+"scr\ldc1314.c" LARGE OPTIMIZE (8,SPEED) BROWSE INCDIR(.\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\ldc1314.lst) OBJECT(.\Objects\ldc1314.obj)

@@ -1,5 +1,7 @@
 #include "project_config.h"
 
+void (*run)();
+uchar step;
 //******************************
 //		定时器0初始化函数
 //作用：初始化定时器0
@@ -23,12 +25,15 @@ void timer0_Init()
 //******************************
 void time0int(void) interrupt 1
 {
-    
-//  定时器定时1ms
 	TH0=(65536-1000)/256;
 	TL0=(65536-1000)%256;
- 
+//    run();
 	count++;
+//    comlive_time++;
+//    if(comlive_time>com_dead)
+//    {
+//        comlive_time=com_new;
+//    }
 }
  
  

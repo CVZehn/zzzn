@@ -14,7 +14,7 @@ uchar upstep4_table[]={0x08,0x02,0x06,0x01};
 //******************************
 void MotorStop(void)
 {
-	P2 = 0x00;
+	P2 = 0x01;
 }
  
  
@@ -65,5 +65,10 @@ void ConStep(uchar var)
 			}
 		}
 	}
+}
+
+void move(uchar i)
+{
+	P2=upstep8_table[i]<<1;
 }
 
