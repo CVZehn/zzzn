@@ -5,7 +5,6 @@
 ".\Objects\NRF24L01.obj",
 ".\Objects\GP2Y_ADC.obj",
 ".\Objects\usart1.obj",
-".\Objects\usart2.obj",
 ".\Objects\progress.obj" 
 TO ".\Objects\智能车桩" 
 PRINT(".\Listings\智能车桩.m51") RAMSIZE(256) 

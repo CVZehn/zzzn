@@ -412,11 +412,6 @@
               <FilePath>.\scr\usart1.c</FilePath>
             </File>
             <File>
-              <FileName>usart2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\scr\usart2.c</FilePath>
-            </File>
-            <File>
               <FileName>progress.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\scr\progress.c</FilePath>

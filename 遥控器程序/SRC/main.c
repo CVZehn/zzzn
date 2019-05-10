@@ -6,13 +6,17 @@ sbit KEY3=P3^7;
 sbit KEY4=P3^6;
 sbit KEY5=P3^3;
 sbit KEY6=P3^2;
-//行人：蓝灯亮 车辆：红灯亮 
+//行人：蓝灯亮 车辆：红灯亮
+#define auto_model 0 
+#define cont_model 1
 
 void Delay150us();	//@11.0592MHz
 void Delay50ms();
 
 unsigned char TXBUFF[]={112,112,112,112};
 unsigned char RXBUFF[4];
+
+unsigned char model=0;
 
 void main()
 {
@@ -29,7 +33,7 @@ void main()
     while(1)
     {
         
-        TXBUFF[0]=0;TXBUFF[1]=0;TXBUFF[2]=0;TXBUFF[3]=0;
+        TXBUFF[1]=0;TXBUFF[2]=0;TXBUFF[3]=0;
         
 //        
         
@@ -66,28 +70,20 @@ void main()
             Delay50ms();
             if(KEY6==0)
             {
-                TXBUFF[1]=9;
+                model=!model;
+                TXBUFF[0]=model;
                 while(KEY6==0);
             }
         }
         else
         {
-            TXBUFF[0]=0;TXBUFF[1]=0;TXBUFF[2]=0;TXBUFF[3]=0;
+            TXBUFF[1]=0;TXBUFF[2]=0;TXBUFF[3]=0;
         }
         
         nRF24L01_TX_Mode(TXBUFF);Delay150us();
         nRF24L01_RX_Mode(RXBUFF);Delay150us();
-        if(RXBUFF[1]==pedestrian)//
-        {
-            LED2=0;
-            LED1=1;
-        }
-        else if(RXBUFF[1]==vehicle)//
-        {
-            LED1=0;
-            LED2=1;
-        }
-        else if(RXBUFF[1]==all)//
+        
+        if(model==auto_model)//自动模式
         {
             LED2=0;
             LED1=0;
@@ -96,8 +92,28 @@ void main()
         {
             LED2=1;
             LED1=1;
+            if(RXBUFF[1]==pedestrian)//
+            {
+                LED2=0;
+                LED1=1;
+            }
+            else if(RXBUFF[1]==vehicle)//
+            {
+                LED1=0;
+                LED2=1;
+            }
+            else if(RXBUFF[1]==all)//
+            {
+                LED2=0;
+                LED1=0;
+            }
+            else
+            {
+                LED2=1;
+                LED1=1;
+            }
         }
-//        
+//            
     }
 }
 

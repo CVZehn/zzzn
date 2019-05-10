@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   MAIN                                                              04/18/2019 16:24:26 PAGE 1   
+C51 COMPILER V9.53.0.0   MAIN                                                              05/03/2019 16:42:22 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MAIN
@@ -16,145 +16,161 @@ line level    source
    6          sbit KEY4=P3^6;
    7          sbit KEY5=P3^3;
    8          sbit KEY6=P3^2;
-   9          //行人：蓝灯亮 车辆：红灯亮 
-  10          
-  11          void Delay150us();      //@11.0592MHz
-  12          void Delay50ms();
-  13          
-  14          unsigned char TXBUFF[]={112,112,112,112};
-  15          unsigned char RXBUFF[4];
-  16          
-  17          void main()
-  18          {
-  19   1          KEY3=1;
-  20   1          KEY4=1;
-  21   1          KEY5=1;
-  22   1          KEY6=1;
-  23   1          timer_init();
-*** WARNING C206 IN LINE 23 OF SRC\main.c: 'timer_init': missing function-prototype
-  24   1          Delay50ms();
-  25   1          Delay50ms();
-  26   1          Delay50ms();
-  27   1          init_NRF24L01();
+   9          //行人：蓝灯亮 车辆：红灯亮
+  10          #define auto_model 0 
+  11          #define cont_model 1
+  12          
+  13          void Delay150us();      //@11.0592MHz
+  14          void Delay50ms();
+  15          
+  16          unsigned char TXBUFF[]={112,112,112,112};
+  17          unsigned char RXBUFF[4];
+  18          
+  19          unsigned char model=0;
+  20          
+  21          void main()
+  22          {
+  23   1          KEY3=1;
+  24   1          KEY4=1;
+  25   1          KEY5=1;
+  26   1          KEY6=1;
+  27   1          timer_init();
+*** WARNING C206 IN LINE 27 OF SRC\main.c: 'timer_init': missing function-prototype
   28   1          Delay50ms();
-  29   1          while(1)
-  30   1          {
-  31   2              
-  32   2              TXBUFF[0]=0;TXBUFF[1]=0;TXBUFF[2]=0;TXBUFF[3]=0;
-  33   2              
-  34   2      //        
+  29   1          Delay50ms();
+  30   1          Delay50ms();
+  31   1          init_NRF24L01();
+  32   1          Delay50ms();
+  33   1          while(1)
+  34   1          {
   35   2              
-  36   2              if(KEY3==0)//禁止通过 杆升起
-  37   2              {
-  38   3                      Delay50ms();
-  39   3                  if(KEY3==0)
-  40   3                  {
-  41   4                      TXBUFF[1]=pole_up;
-  42   4                      while(KEY3==0);
-  43   4                  }
-  44   3                  
-  45   3              }
-  46   2              else if(KEY4==0)//允许通过 杆下降
-  47   2              {
-  48   3                      Delay50ms();
-  49   3                   if(KEY4==0)
-  50   3                  {
-  51   4                      TXBUFF[1]=pole_down;
-  52   4                      while(KEY4==0);
-  53   4                  }
-C51 COMPILER V9.53.0.0   MAIN                                                              04/18/2019 16:24:26 PAGE 2   
+  36   2              TXBUFF[1]=0;TXBUFF[2]=0;TXBUFF[3]=0;
+  37   2              
+  38   2      //        
+  39   2              
+  40   2              if(KEY3==0)//禁止通过 杆升起
+  41   2              {
+  42   3                      Delay50ms();
+  43   3                  if(KEY3==0)
+  44   3                  {
+  45   4                      TXBUFF[1]=pole_up;
+  46   4                      while(KEY3==0);
+  47   4                  }
+  48   3                  
+  49   3              }
+  50   2              else if(KEY4==0)//允许通过 杆下降
+  51   2              {
+  52   3                      Delay50ms();
+  53   3                   if(KEY4==0)
+C51 COMPILER V9.53.0.0   MAIN                                                              05/03/2019 16:42:22 PAGE 2   
 
-  54   3              }
-  55   2              else if(KEY5==0)//杆停止运动
-  56   2              {
-  57   3                      Delay50ms();
-  58   3                  if(KEY5==0)
-  59   3                  {
-  60   4                      TXBUFF[1]=pole_stop;
-  61   4                      while(KEY5==0);
-  62   4                  }
-  63   3              }
-  64   2              else if(KEY6==0)
-  65   2              {
-  66   3                  Delay50ms();
-  67   3                  if(KEY6==0)
-  68   3                  {
-  69   4                      TXBUFF[1]=9;
-  70   4                      while(KEY6==0);
-  71   4                  }
-  72   3              }
-  73   2              else
-  74   2              {
-  75   3                  TXBUFF[0]=0;TXBUFF[1]=0;TXBUFF[2]=0;TXBUFF[3]=0;
-  76   3              }
-  77   2              
-  78   2              nRF24L01_TX_Mode(TXBUFF);Delay150us();
-  79   2              nRF24L01_RX_Mode(RXBUFF);Delay150us();
-  80   2              if(RXBUFF[1]==pedestrian)//
-  81   2              {
-  82   3                  LED2=0;
-  83   3                  LED1=1;
-  84   3              }
-  85   2              else if(RXBUFF[1]==vehicle)//
-  86   2              {
-  87   3                  LED1=0;
-  88   3                  LED2=1;
-  89   3              }
-  90   2              else if(RXBUFF[1]==all)//
-  91   2              {
-  92   3                  LED2=0;
-  93   3                  LED1=0;
-  94   3              }
-  95   2              else
-  96   2              {
-  97   3                  LED2=1;
-  98   3                  LED1=1;
-  99   3              }
- 100   2      //        
- 101   2          }
- 102   1      }
- 103          
- 104          void Delay50ms()                //@11.0592MHz
- 105          {
- 106   1              unsigned char i, j, k;
- 107   1      
- 108   1              _nop_();
- 109   1              _nop_();
- 110   1              i = 3;
- 111   1              j = 26;
- 112   1              k = 223;
- 113   1              do
- 114   1              {
- 115   2                      do
-C51 COMPILER V9.53.0.0   MAIN                                                              04/18/2019 16:24:26 PAGE 3   
+  54   3                  {
+  55   4                      TXBUFF[1]=pole_down;
+  56   4                      while(KEY4==0);
+  57   4                  }
+  58   3              }
+  59   2              else if(KEY5==0)//杆停止运动
+  60   2              {
+  61   3                      Delay50ms();
+  62   3                  if(KEY5==0)
+  63   3                  {
+  64   4                      TXBUFF[1]=pole_stop;
+  65   4                      while(KEY5==0);
+  66   4                  }
+  67   3              }
+  68   2              else if(KEY6==0)
+  69   2              {
+  70   3                  Delay50ms();
+  71   3                  if(KEY6==0)
+  72   3                  {
+  73   4                      model=!model;
+  74   4                      TXBUFF[0]=model;
+  75   4                      while(KEY6==0);
+  76   4                  }
+  77   3              }
+  78   2              else
+  79   2              {
+  80   3                  TXBUFF[1]=0;TXBUFF[2]=0;TXBUFF[3]=0;
+  81   3              }
+  82   2              
+  83   2              nRF24L01_TX_Mode(TXBUFF);Delay150us();
+  84   2              nRF24L01_RX_Mode(RXBUFF);Delay150us();
+  85   2              
+  86   2              if(model==auto_model)//自动模式
+  87   2              {
+  88   3                  LED2=0;
+  89   3                  LED1=0;
+  90   3              }
+  91   2              else
+  92   2              {
+  93   3                  LED2=1;
+  94   3                  LED1=1;
+  95   3                  if(RXBUFF[1]==pedestrian)//
+  96   3                  {
+  97   4                      LED2=0;
+  98   4                      LED1=1;
+  99   4                  }
+ 100   3                  else if(RXBUFF[1]==vehicle)//
+ 101   3                  {
+ 102   4                      LED1=0;
+ 103   4                      LED2=1;
+ 104   4                  }
+ 105   3                  else if(RXBUFF[1]==all)//
+ 106   3                  {
+ 107   4                      LED2=0;
+ 108   4                      LED1=0;
+ 109   4                  }
+ 110   3                  else
+ 111   3                  {
+ 112   4                      LED2=1;
+ 113   4                      LED1=1;
+ 114   4                  }
+ 115   3              }
+C51 COMPILER V9.53.0.0   MAIN                                                              05/03/2019 16:42:22 PAGE 3   
 
- 116   2                      {
- 117   3                              while (--k);
- 118   3                      } while (--j);
- 119   2              } while (--i);
- 120   1      }
- 121          void Delay150us()               //@11.0592MHz
- 122          {
- 123   1              unsigned char i, j;
- 124   1      
+ 116   2      //            
+ 117   2          }
+ 118   1      }
+ 119          
+ 120          void Delay50ms()                //@11.0592MHz
+ 121          {
+ 122   1              unsigned char i, j, k;
+ 123   1      
+ 124   1              _nop_();
  125   1              _nop_();
- 126   1              _nop_();
- 127   1              _nop_();
- 128   1              i = 2;
- 129   1              j = 153;
- 130   1              do
- 131   1              {
- 132   2                      while (--j);
- 133   2              } while (--i);
- 134   1      }
+ 126   1              i = 3;
+ 127   1              j = 26;
+ 128   1              k = 223;
+ 129   1              do
+ 130   1              {
+ 131   2                      do
+ 132   2                      {
+ 133   3                              while (--k);
+ 134   3                      } while (--j);
+ 135   2              } while (--i);
+ 136   1      }
+ 137          void Delay150us()               //@11.0592MHz
+ 138          {
+ 139   1              unsigned char i, j;
+ 140   1      
+ 141   1              _nop_();
+ 142   1              _nop_();
+ 143   1              _nop_();
+ 144   1              i = 2;
+ 145   1              j = 153;
+ 146   1              do
+ 147   1              {
+ 148   2                      while (--j);
+ 149   2              } while (--i);
+ 150   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    205    ----
+   CODE SIZE        =    224    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =      8    ----
+   DATA SIZE        =      9    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

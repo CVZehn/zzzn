@@ -391,11 +391,6 @@
               <FileType>1</FileType>
               <FilePath>.\SRC\time.c</FilePath>
             </File>
-            <File>
-              <FileName>time.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\INC\time.h</FilePath>
-            </File>
           </Files>
         </Group>
       </Groups>

@@ -7,7 +7,6 @@
 #include "timer0.h"
 #include "oled.h" 
 #include "usart1.h" 
-#include "usart2.h" 
 #include "NRF24L01.h"
 #include "GP2Y_ADC.h"
 #include "ldc1314.h"
@@ -34,6 +33,9 @@
 
 #define Pedestrian_distance 200//行人
 
+#define auto_model 0
+#define cont_model 1
+
 extern uchar Semaphore;//信号量 ：红外和金属检测标志
 extern uchar comm_pole;//信号量 ：红外和金属检测标志
                
@@ -46,15 +48,20 @@ extern  u8 TXBUFF[4];
 extern  uint comlive_time;
 extern  uint rise_time;
 extern uchar step;
+extern uchar model;
+extern uchar yuyin_last ;
+extern uint yuyintime  ;
     
 sfr P4   = 0xC0;
 
 sbit KEY1=P3^3;
 sbit KEY2=P3^4;
-sbit Metal=P0^4;
+sbit Metal=P0^2;
 sbit SW2 =P3^7;
 sbit SW1 =P4^1;
 sbit ledg =P4^2;
 sbit ledr =P4^3;
+sbit yuyin0 =P0^4;
+sbit yuyin1 =P0^3;
 
 #endif

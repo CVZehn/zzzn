@@ -38,6 +38,12 @@ void time0int(void) interrupt 1
         comlive_time=com_new;
         Semaphore=0;
     }
+    yuyintime++;
+    if(yuyintime>=6000)
+    {
+        yuyin_last=0;
+        yuyintime=0;
+    }
 }
  
  

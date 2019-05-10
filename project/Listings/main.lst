@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   MAIN                                                              04/18/2019 22:40:43 PAGE 1   
+C51 COMPILER V9.53.0.0   MAIN                                                              05/10/2019 13:48:30 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MAIN
@@ -12,61 +12,82 @@ line level    source
    2          
    3          sfr P0M1 = 0x93;
    4          sfr P0M0 = 0x94;
-   5          sbit RST=P1^1;
-   6          
-   7          
-   8          u8 RXBUFF[4],RXBUFF_L[4];
-   9          u8 TXBUFF[4]={11,11,11,11};
-  10          
-  11          
-  12          void Delay150us();      //@11.0592MHz
+   5          sfr P1M1 = 0x91;
+   6          sfr P1M0 = 0x92;
+   7          sfr P2M1 = 0x95;
+   8          sfr P2M0 = 0x96;
+   9          sfr P3M1 = 0xb1;
+  10          sfr P3M0 = 0xb2;
+  11          sfr P4M1 = 0xb3;
+  12          sfr P4M0 = 0xb4;
   13          
-  14          void main()
-  15          {
-  16   1          P0M1 = 0;  
-  17   1          P0M0 = 0;   //设置为准双向口
-  18   1          SW1=1;
-  19   1          SW2=1;
-  20   1          Metal = 1;
-  21   1          run=MotorStop;//初始化指针函数防止野指针的出现
-  22   1          timer0_Init();
-  23   1          InitADC();
-  24   1          usart2_init();
-  25   1          init_NRF24L01();
-  26   1              OLED_Init();                    //初始化OLED  
-  27   1              OLED_Clear(); 
-  28   1          OLED_ShowString(10,0,"ready    ",16);
-  29   1              while(1)
-  30   1              {
-  31   2              sence();
-  32   2              nRF24L01_TX_Mode(TXBUFF);
-  33   2              Delay150us();
-  34   2              nRF24L01_RX_Mode(RXBUFF);
-  35   2              Delay150us();
-  36   2              remote_control();
-  37   2              }
-  38   1      }
-  39           
-  40          void Delay150us()               //@11.0592MHz
-  41          {
-  42   1              unsigned char i, j;
-  43   1      
-  44   1              _nop_();
-  45   1              _nop_();
-  46   1              _nop_();
-  47   1              i = 2;
-  48   1              j = 153;
-  49   1              do
-  50   1              {
-  51   2                      while (--j);
-  52   2              } while (--i);
-  53   1      }
+  14          sbit RST=P1^1;
+  15          
+  16          
+  17          u8 RXBUFF[4],RXBUFF_L[4];
+  18          u8 TXBUFF[4]={11,11,11,11};
+  19          
+  20          
+  21          void Delay150us();      //@11.0592MHz
+  22          
+  23          void main()
+  24          {
+  25   1          
+  26   1          P0M0 = 0x00;
+  27   1          P0M1 = 0x00;
+  28   1          P1M0 = 0x00;
+  29   1          P1M1 = 0x00;
+  30   1          P2M0 = 0x00;
+  31   1          P2M1 = 0x00;
+  32   1          P3M0 = 0x00;
+  33   1          P3M1 = 0x00;
+  34   1          P4M0 = 0x00;
+  35   1          P4M1 = 0x00;
+  36   1          
+  37   1          SW1=1;
+  38   1          SW2=1;
+  39   1          Metal = 1;
+  40   1          
+  41   1          run=MotorStop;//初始化指针函数防止野指针的出现
+  42   1          timer0_Init();
+  43   1          InitADC();
+  44   1          init_NRF24L01();
+  45   1              OLED_Init();                    //初始化OLED  
+  46   1              OLED_Clear(); 
+  47   1          OLED_ShowString(10,0,"ready    ",16);
+  48   1      //        yuyin0=1;
+  49   1      //        yuyin1=1;
+  50   1              while(1)
+  51   1              {
+  52   2              sence();
+  53   2              nRF24L01_TX_Mode(TXBUFF);
+  54   2              Delay150us();
+C51 COMPILER V9.53.0.0   MAIN                                                              05/10/2019 13:48:30 PAGE 2   
 
-C51 COMPILER V9.53.0.0   MAIN                                                              04/18/2019 22:40:43 PAGE 2   
+  55   2              nRF24L01_RX_Mode(RXBUFF);
+  56   2              Delay150us();
+  57   2              remote_control();
+  58   2              }
+  59   1      }
+  60           
+  61          void Delay150us()               //@11.0592MHz
+  62          {
+  63   1              unsigned char i, j;
+  64   1      
+  65   1              _nop_();
+  66   1              _nop_();
+  67   1              _nop_();
+  68   1              i = 2;
+  69   1              j = 153;
+  70   1              do
+  71   1              {
+  72   2                      while (--j);
+  73   2              } while (--i);
+  74   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    106    ----
+   CODE SIZE        =    119    ----
    CONSTANT SIZE    =     10    ----
    XDATA SIZE       =     16    ----
    PDATA SIZE       =   ----    ----
